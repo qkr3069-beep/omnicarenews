@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>옴니케어 뉴스 브리핑</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Pretendard Variable -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/pretendardvariable.css" />
+  <style>
+    :root{
+      --brand-primary:#1f4fff; --brand-primary-700:#1a3fd1; --brand-primary-50:#eef2ff;
+      --brand-text:#0f172a; --brand-muted:#64748b; --brand-card:#ffffff; --brand-divider:#e5e7eb;
+      --brand-radius:14px; --brand-shadow:0 6px 18px rgba(31,79,255,0.08);
+    }
+    html,body{ font-family:"Pretendard Variable",Pretendard,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic","맑은 고딕",Arial,"Helvetica Neue",Helvetica,sans-serif; }
+    .brand-header{ background: linear-gradient(90deg,var(--brand-primary) 0%,var(--brand-primary-700) 100%); }
+    .brand-btn{
+      background:var(--brand-primary); color:#fff; border-radius:9999px; padding:10px 18px; font-weight:700;
+      box-shadow:var(--brand-shadow); transition:transform .12s ease, box-shadow .12s ease, background .12s ease;
+    }
+    .brand-btn:hover{ background:var(--brand-primary-700); transform:translateY(-1px); }
+    .brand-link{ color:var(--brand-primary); font-weight:700; }
+    .brand-link:hover{ text-decoration:underline; }
+    .brand-section-title{
+      color:var(--brand-text); font-weight:800; border-left:6px solid var(--brand-primary);
+      padding-left:10px; margin-bottom:14px;
+    }
+    .brand-card{
+      background:var(--brand-card); border-radius:var(--brand-radius); box-shadow:var(--brand-shadow);
+      transition:transform .12s ease, box-shadow .12s ease, background .12s ease; border:1px solid transparent;
+    }
+    .brand-card:hover{ transform:translateY(-2px); box-shadow:0 10px 26px rgba(31,79,255,0.12); border-color:var(--brand-divider); }
+    .brand-sub{ color:var(--brand-muted); }
+    .brand-wrap{ background:var(--brand-primary-50); }
+    .brand-divider{ border-top:1px dashed var(--brand-divider); }
+    .badge-link{
+      display:inline-flex; align-items:center; gap:6px; padding:6px 10px; border-radius:9999px;
+      background:#ffffff1a; color:#fff; font-weight:700; font-size:12px;
+      transition:background .12s ease, transform .12s ease;
+    }
+    .badge-link:hover{ background:#ffffff2b; transform:translateY(-1px); }
+  </style>
+</head>
+<body class="text-[var(--brand-text)] brand-wrap min-h-screen">
+
+  <!-- 헤더 (모바일: 세로 스택 / 데스크탑: 가로 배치) -->
+  <header class="brand-header text-white">
+    <div class="max-w-6xl mx-auto px-5 py-6 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+      
+      <!-- 좌측 그룹: (모바일) 로고 -> 타이틀+정책링크 세로 / (PC) 로고+타이틀+정책링크 가로 -->
+      <div class="flex flex-col gap-2">
+        <!-- 로고 (모바일 1행 단독, PC에서도 표시) -->
+        <div class="flex">
+          <img src="https://postfiles.pstatic.net/MjAyNTA5MDVfMjU2/MDAxNzU3MDM1MzI5ODQ1.uqf71crOiDQYlLsoFGuIKzlASSUil46DsxNDebXlBcYg.wBc6WmhjLSfYDp6xPIF5sznkh50XOkMy-xq0k9GMTV8g.PNG/%EC%98%B4%EB%8B%88%EC%BC%80%EC%96%B4_%EB%A1%9C%EA%B3%A0.png?type=w966" alt="옴니케어 로고" class="w-100 h-20 object-contain" />
+        </div>
+        <!-- 타이틀 + 정책브리핑 링크 (모바일 2행, PC에서는 로고 오른쪽에 자연스럽게) -->
+        <div class="flex flex-wrap items-center gap-3">
+          <h1 class="text-xl lg:text-2xl font-extrabold tracking-tight">옴니케어 뉴스 브리핑</h1>
+          <a href="https://www.korea.kr/" target="_blank" rel="noopener" class="badge-link">
+            정책브리핑 바로가기
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path d="M7 17L17 7M10 7h7v7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+
+      <!-- 우측 그룹: 날짜 + 조회 (모바일에서는 맨 아래 3행으로 스택) -->
+      <div class="flex items-center gap-3">
+        <input type="date" id="datePicker" class="px-3 py-2 rounded-xl text-[var(--brand-text)] bg-white outline-none focus:ring-2 ring-[var(--brand-primary)] w-full sm:w-auto" />
+        <button onclick="loadAllNews()" class="brand-btn">조회</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- 본문 -->
+  <main class="max-w-6xl mx-auto px-5 py-2 space-y-3">
+    <div class="brand-divider"></div>
+    <div id="news-container" class="space-y-3"></div>
+  </main>
+
+  <script>
+  // 카테고리 RSS (국가 소식 제거 상태)
+  const feeds = {
+    "주요 소식(국내)": "https://news.google.com/rss?hl=ko&gl=KR&ceid=KR:ko",
+    "주요 소식(국외)": "https://news.google.com/rss?hl=en-US&gl=US&ceid=US:en",
+    "타사 소식": "https://news.google.com/rss/search?q=GC케어+OR+어떠케어+OR+착한의사+OR+비바이노베이션+OR+검진가자+OR+검진해&hl=ko&gl=KR&ceid=KR:ko",
+    "건강검진": "https://news.google.com/rss/search?q=건강검진&hl=ko&gl=KR&ceid=KR:ko",
+    "헬스케어": "https://news.google.com/rss/search?q=헬스케어&hl=ko&gl=KR&ceid=KR:ko",
+    "웰니스": "https://news.google.com/rss/search?q=웰니스&hl=ko&gl=KR&ceid=KR:ko",
+    "웨어러블": "https://news.google.com/rss/search?q=갤럭시워치+OR+애플워치+OR+스마트워치+OR+핏빗+OR+워치&hl=ko&gl=KR&ceid=KR:ko"
+  };
+
+  // RSS -> JSON 변환
+  async function fetchRSS(url) {
+    const apiUrl = "https://api.rss2json.com/v1/api.json?rss_url=" + encodeURIComponent(url);
+    const res = await fetch(apiUrl);
+    return await res.json();
+  }
+
+  // 텍스트 정리 & 부제목
+  function cleanText(t) {
+    return (t || "")
+      .replace(/<[^>]+>/g, " ")
+      .replace(/&[a-z]+;/gi, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+  }
+  function makeSubdesc(desc) {
+    const t = cleanText(desc);
+    return t.length > 60 ? t.slice(0, 60) + "..." : t;
+  }
+
+  // ✅ Safari 호환 날짜 파싱
+  function parseYMD(ymd) {
+    const [y, m, d] = ymd.split("-").map(Number);
+    return new Date(y, m - 1, d); // JS에서 month는 0부터 시작
+  }
+
+  // 날짜 비교 (±1일 허용)
+  function isSameDate(pubDate, selectedDate) {
+    const d = new Date(pubDate);
+    const sel = parseYMD(selectedDate); // ✅ Safari-safe 변환
+    const diff = Math.abs((d - sel) / (1000 * 60 * 60 * 24));
+    return diff <= 1;
+  }
+
+  // 광고성 브랜드 중복 제거
+  const BRAND_SET = new Set([
+    "손목닥터","9988","갤럭시워치","애플워치","핏빗","스마트워치",
+    "GC케어","어떠케어","착한의사","비바이노베이션","검진가자","검진해"
+  ]);
+  function extractBrandKey(title) {
+    for (const b of BRAND_SET) { if (title.includes(b)) return b; }
+    return null;
+  }
+
+  // 섹션 렌더링
+  function renderSection(container, category, items, selectedDate){
+    let count = 0;
+    const seenTitles = new Set();
+    const seenBrands = new Set();
+
+    const section = document.createElement("section");
+    section.innerHTML = `<h2 class="brand-section-title text-xl">${category}</h2>`;
+
+    for (const item of items) {
+      if (count >= 5) break;
+      if (!isSameDate(item.pubDate, selectedDate)) continue;
+
+      const title = (item.title || "").trim();
+      const link  = item.link || "#";
+      const desc  = item.description || "";
+
+      const key = title.replace(/\s+/g, "") + link;
+      if (seenTitles.has(key)) continue;
+
+      const brandKey = extractBrandKey(title);
+      if (brandKey && seenBrands.has(brandKey)) continue;
+
+      seenTitles.add(key);
+      if (brandKey) seenBrands.add(brandKey);
+
+      const subdesc = makeSubdesc(desc);
+
+      const card = document.createElement("div");
+      card.className = "brand-card mb-4 p-4";
+      card.innerHTML = `
+        <a href="${link}" target="_blank" class="brand-link block mb-1">${title}</a>
+        <p class="text-sm brand-sub">${subdesc}</p>
+      `;
+      section.appendChild(card);
+      count++;
+    }
+
+    if (count === 0) {
+      section.innerHTML += `<p class="brand-sub">해당 날짜에 기사가 없습니다.</p>`;
+    }
+
+    const divider = document.createElement("div");
+    divider.className = "brand-divider mt-6 mb-8";
+
+    container.appendChild(section);
+    container.appendChild(divider);
+  }
+
+  // 전체 로드
+  async function loadAllNews(){
+    const selectedDate = document.getElementById("datePicker").value;
+    const container = document.getElementById("news-container");
+    container.innerHTML = "";
+
+    for (const [category, url] of Object.entries(feeds)) {
+      const data = await fetchRSS(url);
+      const items = Array.isArray(data.items) ? data.items : [];
+      renderSection(container, category, items, selectedDate);
+    }
+  }
+
+  // 초기 로드
+  window.onload = () => {
+    const today = new Date().toISOString().slice(0, 10);
+    document.getElementById("datePicker").value = today;
+    loadAllNews();
+  }
+ </script>
+</body>
+</html>
