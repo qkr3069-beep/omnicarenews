@@ -83,15 +83,15 @@
 
   <script>
   // 카테고리 RSS (국가 소식 제거 상태)
-  const feeds = {
-    "주요 소식(국내)": "https://news.google.com/rss?hl=ko&gl=KR&ceid=KR:ko",
-    "주요 소식(국외)": "https://news.google.com/rss?hl=en-US&gl=US&ceid=US:en",
-    "타사 소식": "https://news.google.com/rss/search?q=GC케어+OR+어떠케어+OR+착한의사+OR+비바이노베이션+OR+검진가자+OR+검진해&hl=ko&gl=KR&ceid=KR:ko",
-    "건강검진": "https://news.google.com/rss/search?q=건강검진&hl=ko&gl=KR&ceid=KR:ko",
-    "헬스케어": "https://news.google.com/rss/search?q=헬스케어&hl=ko&gl=KR&ceid=KR:ko",
-    "웰니스": "https://news.google.com/rss/search?q=웰니스&hl=ko&gl=KR&ceid=KR:ko",
-    "웨어러블": "https://news.google.com/rss/search?q=갤럭시워치+OR+애플워치+OR+스마트워치+OR+핏빗+OR+워치&hl=ko&gl=KR&ceid=KR:ko"
-  };
+const feeds = {
+  "건강검진": "https://news.google.com/rss/search?q=건강검진&hl=ko&gl=KR&ceid=KR:ko",
+  "타사 소식": "https://news.google.com/rss/search?q=GC케어+OR+어떠케어+OR+착한의사+OR+비바이노베이션+OR+검진가자+OR+검진해&hl=ko&gl=KR&ceid=KR:ko",
+  "헬스케어": "https://news.google.com/rss/search?q=헬스케어&hl=ko&gl=KR&ceid=KR:ko",
+  "웰니스": "https://news.google.com/rss/search?q=웰니스&hl=ko&gl=KR&ceid=KR:ko",
+  "웨어러블": "https://news.google.com/rss/search?q=갤럭시워치+OR+애플워치+OR+스마트워치+OR+핏빗+OR+워치&hl=ko&gl=KR&ceid=KR:ko",
+  "주요 소식(국내)": "https://news.google.com/rss?hl=ko&gl=KR&ceid=KR:ko",
+  "주요 소식(국외)": "https://news.google.com/rss?hl=en-US&gl=US&ceid=US:en"
+};
 
   // RSS -> JSON 변환
   async function fetchRSS(url) {
